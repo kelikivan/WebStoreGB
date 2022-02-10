@@ -1,11 +1,34 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-// Загрузка информации из файла конфигурации
+#region Настройка построителя приложения - определение содержимого
+//builder.Configuration.AddCommandLine(args);
 
-var configuration = app.Configuration;
-var greetings = configuration["CustomGreetings"];
+var services = builder.Services;
+services.AddControllersWithViews();
+#endregion
 
-app.MapGet("/", () => greetings);
+var app = builder.Build(); //Сборка приложения
 
-app.Run();
+//app.Urls.Add("http://+:80"); // - если хочется обеспечить видимость приложения в локальной сети
+
+#region Конфигурирование конвейера обработки входящих соединений
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseRouting();
+
+//app.MapGet("/", () => app.Configuration["CustomGreetings"]);
+app.MapGet("/throw", () => 
+{ 
+    throw new ApplicationException("Ошибка в программе!"); 
+});
+
+//app.MapDefaultControllerRoute();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+#endregion
+
+app.Run(); //Запуск приложения
