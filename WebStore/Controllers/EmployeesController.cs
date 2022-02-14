@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebStore.Data;
 using WebStore.Models;
+using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
 namespace WebStore.Controllers
@@ -9,21 +9,22 @@ namespace WebStore.Controllers
     //[Route("Staff/{action=Index}/{id?}")]
     public class EmployeesController : Controller
     {
-        private ICollection<Employee> _employees;
-        public EmployeesController()
+        private readonly IEmployeesService _employeesService;
+        public EmployeesController(IEmployeesService employeesService)
         {
-            _employees = TestData.Employees;
+            _employeesService = employeesService;
         }
 
         public IActionResult Index()
         {
-            return View(_employees);
+            var result = _employeesService.GetAll();
+            return View(result);
         }
 
         //[Route("~/employees/info-{id}")]
         public IActionResult Details(int Id)
         {
-            var employee = _employees.FirstOrDefault(t => t.Id == Id);
+            var employee = _employeesService.GetById(Id);
             
             if (employee is null)
             {
@@ -37,7 +38,7 @@ namespace WebStore.Controllers
 
         public IActionResult Edit(int id)
         {
-            var employee = _employees.FirstOrDefault(empl => empl.Id == id);
+            var employee = _employeesService.GetById(id);
             if (employee is null)
             {
                 return NotFound();
@@ -55,9 +56,22 @@ namespace WebStore.Controllers
             return View(model);
         }
         
+        [HttpPost]
         public IActionResult Edit(EmployeeEditViewModel model)
         {
-            // Обработка модели
+            var employee = new Employee
+            {
+                Id = model.Id,
+                LastName = model.LastName,
+                FirstName = model.FirstName,
+                Patronymic = model.Patronymic,
+                BirthDay = model.BirthDay,
+            };
+
+            if (!_employeesService.Edit(employee))
+            {
+                return NotFound();
+            }
 
             return RedirectToAction("Index");
         }

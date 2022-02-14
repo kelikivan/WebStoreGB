@@ -1,5 +1,7 @@
 ﻿using WebStore.Infrastructure.Conventions;
 using WebStore.Infrastructure.Middleware;
+using WebStore.Services.Interfaces;
+using WebStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ services.AddControllersWithViews(opt =>
 });
 //services.AddMvc();
 //services.AddControllers(); //WebAPI
+
+services.AddSingleton<IEmployeesService, InMemoryEmployeesService>(); // Singleton потому что In Memory
 
 #endregion
 
