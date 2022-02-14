@@ -5,10 +5,8 @@
 }
 
 <div class=container>
-    <h1>Edit</h1>
+    <h1>Редактирование</h1>
 
-    <h4>EmployeeEditViewModel</h4>
-    <hr/>
     <div class="row">
         <div class="col-md-4">
             <form asp-action="Edit" asp-route-id="@Model.Id">
@@ -50,15 +48,14 @@
             </form>
         </div>
     </div>
-
     <div>
+        @if (Model.Id != 0)
+        {
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                <i class="fa fa-trash-o"></i> Удалить
+            </a>
+        }
         <a asp-action="Index">Назад к списку</a>
-        <a asp-controller="Employees"
-            asp-action="Delete"
-            asp-route-id=@Model.Id
-            class="text-danger">
-            удаление
-        </a>
     </div>
 </div>
 

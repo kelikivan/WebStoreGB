@@ -22,9 +22,9 @@ namespace WebStore.Controllers
         }
 
         //[Route("~/employees/info-{id}")]
-        public IActionResult Details(int Id)
+        public IActionResult Details(int id)
         {
-            var employee = _employeesService.GetById(Id);
+            var employee = _employeesService.GetById(id);
             
             if (employee is null)
             {
@@ -34,11 +34,16 @@ namespace WebStore.Controllers
             return View(employee);
         }
 
-        public IActionResult Create() => View();
+        public IActionResult Create() => View("Edit", new EmployeeEditViewModel());
 
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int? id)
         {
-            var employee = _employeesService.GetById(id);
+            if (id is null)
+            {
+                return View(new EmployeeEditViewModel());
+            }
+
+            var employee = _employeesService.GetById((int)id);
             if (employee is null)
             {
                 return NotFound();
@@ -68,7 +73,11 @@ namespace WebStore.Controllers
                 BirthDay = model.BirthDay,
             };
 
-            if (!_employeesService.Edit(employee))
+            if (model.Id == 0)
+            {
+                _employeesService.Add(employee);
+            }
+            else if (!_employeesService.Edit(employee))
             {
                 return NotFound();
             }
