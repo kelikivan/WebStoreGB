@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebStore.Data;
 using WebStore.Models;
+using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
@@ -7,17 +9,15 @@ namespace WebStore.Controllers
     //[Route("Staff/{action=Index}/{id?}")]
     public class EmployeesController : Controller
     {
-        private static readonly List<Employee> _employees = new()
+        private ICollection<Employee> _employees;
+        public EmployeesController()
         {
-            new Employee { Id = 1, LastName = "Иванов", FirstName = "Иван", Patronymic = "Иванович", BirthDay = new DateTime(1990,01,07) },
-            new Employee { Id = 2, LastName = "Петров", FirstName = "Пётр", Patronymic = "Петрович", BirthDay = new DateTime(1995, 02, 18) },
-            new Employee { Id = 3, LastName = "Иванов", FirstName = "Иван", Patronymic = "Иванович", BirthDay = new DateTime(2000, 03, 27) }
-        };
+            _employees = TestData.Employees;
+        }
 
         public IActionResult Index()
         {
-            var result = _employees;
-            return View(result);
+            return View(_employees);
         }
 
         //[Route("~/employees/info-{id}")]
@@ -32,5 +32,36 @@ namespace WebStore.Controllers
 
             return View(employee);
         }
+
+        public IActionResult Create() => View();
+
+        public IActionResult Edit(int id)
+        {
+            var employee = _employees.FirstOrDefault(empl => empl.Id == id);
+            if (employee is null)
+            {
+                return NotFound();
+            }
+
+            var model = new EmployeeEditViewModel
+            {
+                Id = employee.Id,
+                LastName = employee.LastName,
+                FirstName = employee.FirstName,
+                Patronymic = employee.Patronymic,
+                BirthDay = employee.BirthDay,
+            };
+
+            return View(model);
+        }
+        
+        public IActionResult Edit(EmployeeEditViewModel model)
+        {
+            // Обработка модели
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id) => View();
     }
 }
