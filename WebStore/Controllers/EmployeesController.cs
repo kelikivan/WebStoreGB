@@ -3,6 +3,8 @@ using WebStore.Models;
 
 namespace WebStore.Controllers
 {
+    //[Route("empl/[action]/{id?}")]
+    //[Route("Staff/{action=Index}/{id?}")]
     public class EmployeesController : Controller
     {
         private static readonly List<Employee> _employees = new()
@@ -18,6 +20,7 @@ namespace WebStore.Controllers
             return View(result);
         }
 
+        //[Route("~/employees/info-{id}")]
         public IActionResult Details(int Id)
         {
             var employee = _employees.FirstOrDefault(t => t.Id == Id);
