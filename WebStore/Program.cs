@@ -1,10 +1,22 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using WebStore.Infrastructure.Conventions;
+using WebStore.Infrastructure.Middleware;
+using WebStore.Services.Interfaces;
+using WebStore.Services;
+
+var builder = WebApplication.CreateBuilder(args);
 
 #region Настройка построителя приложения - определение содержимого
-//builder.Configuration.AddCommandLine(args);
 
 var services = builder.Services;
-services.AddControllersWithViews();
+services.AddControllersWithViews(opt =>
+{
+    opt.Conventions.Add(new TextConvention());
+});
+//services.AddMvc();
+//services.AddControllers(); //WebAPI
+
+services.AddSingleton<IEmployeesService, InMemoryEmployeesService>(); // Singleton потому что In Memory
+
 #endregion
 
 var app = builder.Build(); //Сборка приложения
@@ -12,25 +24,26 @@ var app = builder.Build(); //Сборка приложения
 //app.Urls.Add("http://+:80"); // - если хочется обеспечить видимость приложения в локальной сети
 
 #region Конфигурирование конвейера обработки входящих соединений
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 
+app.Map("/testpath", async context => await context.Response.WriteAsync("Test middleware"));
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-//app.MapGet("/", () => app.Configuration["CustomGreetings"]);
-app.MapGet("/throw", () => 
-{ 
-    throw new ApplicationException("Ошибка в программе!"); 
-});
+app.UseMiddleware<TestMiddleware>();
 
-//app.MapDefaultControllerRoute();
+app.UseWelcomePage("/welcome");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 #endregion
 
 app.Run(); //Запуск приложения
