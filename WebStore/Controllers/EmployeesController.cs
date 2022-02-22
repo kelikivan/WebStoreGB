@@ -68,6 +68,16 @@ namespace WebStore.Controllers
         [HttpPost]
         public IActionResult Edit(EmployeeEditViewModel model)
         {
+            if (model.LastName.Contains("Kelik"))
+            {
+                ModelState.AddModelError("", "Себя добавлять нельзя");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var employee = new Employee
             {
                 Id = model.Id,
