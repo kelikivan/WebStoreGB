@@ -1,4 +1,5 @@
 ﻿using WebStore.Data;
+using WebStore.Domain;
 using WebStore.Domain.Entities;
 using WebStore.Services.Interfaces;
 
@@ -14,6 +15,26 @@ namespace WebStore.Services
 		public IEnumerable<Section> GetSections()
 		{
 			return TestData.Sections;
+		}
+
+		public IEnumerable<Product> GetProducts(ProductFilter? filter = null)
+		{
+			IEnumerable<Product> query = TestData.Products;
+
+			if (filter != null)
+			{
+				if (filter.SectionId != null)
+				{
+					query = query.Where(p => p.SectionId == filter.SectionId);
+				}
+
+				if (filter is { BrandId: var brand_id })
+				{
+					query = query.Where(p => p.SectionId == brand_id);
+				}
+			}
+
+			return query;
 		}
 	}
 }
