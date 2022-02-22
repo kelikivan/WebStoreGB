@@ -1,27 +1,59 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebStore.Domain;
+using WebStore.Services.Interfaces;
+using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
-    public class ProductsController : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
+	public class ProductsController : Controller
+	{
+		private readonly IProductsService _productsService;
+		public ProductsController(IProductsService productsService)
+		{
+			_productsService = productsService;
+		}
 
-        public IActionResult Product()
-        {
-            return View();
-        }
+		public IActionResult Index(int? brandId, int? sectionId)
+		{
+			var filter = new ProductFilter
+			{
+				SectionId = sectionId,
+				BrandId = brandId
+			};
 
-        public IActionResult Checkout()
-        {
-            return View();
-        }
+			var products = _productsService.GetProducts(filter);
 
-        public IActionResult Cart()
-        {
-            return View();
-        }
-    }
+			var catalog_model = new CatalogViewModel
+			{
+				BrandId = brandId,
+				SectionId = sectionId,
+				Products = products
+					.OrderBy(p => p.BrandId)
+					.Select(p => new ProductViewModel
+					{
+						Id = p.Id,
+						Name = p.Name,
+						Price = p.Price,
+						ImageUrl = p.ImageUrl,
+					}),
+			};
+
+			return View(catalog_model);
+		}
+
+		public IActionResult Product()
+		{
+			return View();
+		}
+
+		public IActionResult Checkout()
+		{
+			return View();
+		}
+
+		public IActionResult Cart()
+		{
+			return View();
+		}
+	}
 }
