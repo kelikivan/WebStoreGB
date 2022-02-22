@@ -16,6 +16,7 @@ services.AddControllersWithViews(opt =>
 //services.AddControllers(); //WebAPI
 
 services.AddSingleton<IEmployeesService, InMemoryEmployeesService>(); // Singleton потому что In Memory
+services.AddSingleton<IProductsService, InMemoryProductsService>();
 
 #endregion
 
