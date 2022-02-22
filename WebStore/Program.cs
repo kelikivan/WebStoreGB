@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 services.AddControllersWithViews(opt =>
 {
-    opt.Conventions.Add(new TextConvention());
+	opt.Conventions.Add(new TextConvention());
 });
 //services.AddMvc();
 //services.AddControllers(); //WebAPI
@@ -27,7 +27,7 @@ var app = builder.Build(); //Сборка приложения
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+	app.UseDeveloperExceptionPage();
 }
 
 app.Map("/testpath", async context => await context.Response.WriteAsync("Test middleware"));
@@ -41,8 +41,8 @@ app.UseMiddleware<TestMiddleware>();
 app.UseWelcomePage("/welcome");
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "default",
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 
 #endregion
 
